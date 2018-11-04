@@ -13,15 +13,14 @@
         <Label x:Name="DataSourceLabel" Content="DataBase Source" HorizontalAlignment="Left" Margin="75,192,0,0" VerticalAlignment="Top" FontFamily="Arial" FontSize="16"/>
         <Label x:Name="DatabaseDetailLabel" Content="Database Details" HorizontalAlignment="Left" Margin="75,158,0,0" VerticalAlignment="Top" FontFamily="Arial" FontSize="16"/>
         <Label x:Name="DBUserIDLabel" Content="User ID " HorizontalAlignment="Left" Margin="75,250,0,0" VerticalAlignment="Top" FontFamily="Arial" FontSize="16"/>
-        <Label x:Name="DBPasswordLabel" Content="Password" HorizontalAlignment="Left" Margin="75,277,0,0" VerticalAlignment="Top" FontFamily="Arial" FontSize="16"/>
+        <Label x:Name="DBPasswordLabel" Content="Password" HorizontalAlignment="Left" Margin="75,278,0,0" VerticalAlignment="Top" FontFamily="Arial" FontSize="16"/>
         <TextBox x:Name="DataSourceTextBox" HorizontalAlignment="Left" Height="23" Margin="245,192,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="365" FontSize="16"/>
-        <TextBox x:Name="DBNameTextBox" HorizontalAlignment="Left" Height="23" Margin="245,227,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="365"/>
+        <TextBox x:Name="DBNameTextBox" HorizontalAlignment="Left" Height="23" Margin="245,227,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="365" FontFamily="Arial" FontSize="16"/>
         <TextBox x:Name="UserIDTextBox" HorizontalAlignment="Left" Height="23" Margin="245,255,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="365" FontSize="16"/>
-        <TextBox x:Name="PasswordTextBox" HorizontalAlignment="Left" Height="23" Margin="245,283,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="365" FontSize="16"/>
+        <PasswordBox x:Name="DBPasswordBox" HorizontalAlignment="Left" Margin="245,283,0,0" VerticalAlignment="Top" Width="365" FontSize="16"/>
         <Button x:Name="LoadDBButton" Content="Load to DataBase" HorizontalAlignment="Left" VerticalAlignment="Top" Width="152" Margin="378,352,0,0" Height="22" FontFamily="Arial" FontSize="16" Click="Button_Click"/>
         <Label x:Name="DBNameLabel" Content="DataBase Name" HorizontalAlignment="Left" Margin="75,221,0,0" VerticalAlignment="Top" FontFamily="Arial" FontSize="16"/>
         <Button x:Name="CheckConnectionButton" Content="Check Connection" HorizontalAlignment="Left" Margin="138,352,0,0" VerticalAlignment="Top" Width="149" FontFamily="Arial" FontSize="16" Click="CheckConnectionButton_Click"/>
         <Button x:Name="StartButton" Content="Start" HorizontalAlignment="Left" Margin="607,354,0,0" VerticalAlignment="Top" Width="75" FontFamily="Arial" FontSize="16" Click="StartButton_Click"/>
-
     </Grid>
 </Window>
