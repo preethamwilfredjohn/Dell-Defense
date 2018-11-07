@@ -3,9 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:wpfx ="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:DellDefense"
         mc:Ignorable="d"
-        Title="MainWindow" Height="447.205" Width="884.512">
+        Title="MainWindow" Height="633.405" Width="884.512">
     <Grid>
         <Label x:Name="DirectoryLabel" Content="Choose Directory Path" HorizontalAlignment="Left" Margin="75,48,0,0" VerticalAlignment="Top" FontFamily="Arial" FontSize="16"/>
         <TextBox x:Name="FilePathTextBox" HorizontalAlignment="Left" Height="23" Margin="75,82,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="535" FontSize="16"/>
@@ -14,13 +15,21 @@
         <Label x:Name="DatabaseDetailLabel" Content="Database Details" HorizontalAlignment="Left" Margin="75,158,0,0" VerticalAlignment="Top" FontFamily="Arial" FontSize="16"/>
         <Label x:Name="DBUserIDLabel" Content="User ID " HorizontalAlignment="Left" Margin="75,250,0,0" VerticalAlignment="Top" FontFamily="Arial" FontSize="16"/>
         <Label x:Name="DBPasswordLabel" Content="Password" HorizontalAlignment="Left" Margin="75,278,0,0" VerticalAlignment="Top" FontFamily="Arial" FontSize="16"/>
-        <TextBox x:Name="DataSourceTextBox" HorizontalAlignment="Left" Height="23" Margin="245,192,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="365" FontSize="16"/>
-        <TextBox x:Name="DBNameTextBox" HorizontalAlignment="Left" Height="23" Margin="245,227,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="365" FontFamily="Arial" FontSize="16"/>
-        <TextBox x:Name="UserIDTextBox" HorizontalAlignment="Left" Height="23" Margin="245,255,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="365" FontSize="16"/>
-        <PasswordBox x:Name="DBPasswordBox" HorizontalAlignment="Left" Margin="245,283,0,0" VerticalAlignment="Top" Width="365" FontSize="16"/>
-        <Button x:Name="LoadDBButton" Content="Load to DataBase" HorizontalAlignment="Left" VerticalAlignment="Top" Width="152" Margin="378,352,0,0" Height="22" FontFamily="Arial" FontSize="16" Click="Button_Click"/>
+        <TextBox x:Name="DataSourceTextBox" HorizontalAlignment="Left" Height="23" Margin="245,192,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="365" FontSize="16" Text="dcm.uhcl.edu"/>
+        <TextBox x:Name="DBNameTextBox" HorizontalAlignment="Left" Height="23" Margin="245,227,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="365" FontFamily="Arial" FontSize="16" Text="capfa18g3"/>
+        <TextBox x:Name="UserIDTextBox" HorizontalAlignment="Left" Height="23" Margin="245,255,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="365" FontSize="16" Text="capfa18g3"/>
+        <PasswordBox x:Name="DBPasswordBox" HorizontalAlignment="Left" Margin="245,283,0,0" VerticalAlignment="Top" Width="365" FontSize="16" Password="3163345"/>
+        <Button x:Name="LoadDBButton" Content="Load to DataBase" HorizontalAlignment="Left" VerticalAlignment="Top" Width="152" Margin="378,352,0,0" Height="22" FontFamily="Arial" FontSize="16" Click="LoadDBButton_Click"/>
         <Label x:Name="DBNameLabel" Content="DataBase Name" HorizontalAlignment="Left" Margin="75,221,0,0" VerticalAlignment="Top" FontFamily="Arial" FontSize="16"/>
         <Button x:Name="CheckConnectionButton" Content="Check Connection" HorizontalAlignment="Left" Margin="138,352,0,0" VerticalAlignment="Top" Width="149" FontFamily="Arial" FontSize="16" Click="CheckConnectionButton_Click"/>
-        <Button x:Name="StartButton" Content="Start" HorizontalAlignment="Left" Margin="607,354,0,0" VerticalAlignment="Top" Width="75" FontFamily="Arial" FontSize="16" Click="StartButton_Click"/>
+        <Label x:Name="StartDateTimeLabel" Content="Start Date Time" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="89,397,0,0" FontFamily="Arial" FontSize="16"/>
+        <Label x:Name="EndDateTimeLabel" Content="End Date Time" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="88,450,0,0" FontFamily="Arial" FontSize="16"/>
+        <wpfx:DateTimePicker Height="25" HorizontalAlignment="Left" Margin="280,401,0,0" x:Name="StartDateTimePicker" 
+    VerticalAlignment="Top" Width="250" />
+        <wpfx:DateTimePicker Height="25" HorizontalAlignment="Left" Margin="280,453,0,0" x:Name="EndDateTimePicker" 
+            VerticalAlignment="Top" Width="250" />
+        <Button x:Name="StartButton" Content="Start" HorizontalAlignment="Left" Margin="334,556,0,0" VerticalAlignment="Top" Width="75" FontFamily="Arial" FontSize="16" Click="StartButton_Click"/>
+        <Label x:Name="JobIntervalLabel" Content="Job Interval in Minutes" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="89,504,0,0" FontFamily="Arial" FontSize="16"/>
+        <TextBox x:Name="JobIntervalTextBox" HorizontalAlignment="Left" Height="23" Margin="280,504,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="250" FontSize="16" />
     </Grid>
 </Window>

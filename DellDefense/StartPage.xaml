@@ -8,12 +8,12 @@
         Title="StartPage" Height="450" Width="800">
     <Grid>
         <Label x:Name="LoginLabel" Content="Login Page" HorizontalAlignment="Left" Margin="96,67,0,0" VerticalAlignment="Top" FontFamily="Arial" FontSize="16"/>
-        <Label x:Name="UserNameLabel" Content="User Name" HorizontalAlignment="Left" Margin="96,101,0,0" VerticalAlignment="Top" FontFamily="Arial" FontSize="16"/>
-        <Label x:Name="PasswordLabel" Content="Password" HorizontalAlignment="Left" Margin="96,135,0,0" VerticalAlignment="Top" FontFamily="Arial" FontSize="16"/>
-        <TextBox x:Name="UserNameTextBox" HorizontalAlignment="Left" Height="23" Margin="253,107,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
-        <TextBox x:Name="PasswordTextBox" HorizontalAlignment="Left" Height="23" Margin="253,141,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
-        <Button Content="Sign In" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="421,285,0,0" Click="Button_Click_1"/>
-        <Button Content="Cancel" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="520,285,0,0" Click="Button_Click"/>
+        <Label x:Name="UserNameLabel" Content="User Name" HorizontalAlignment="Left" Margin="96,107,0,0" VerticalAlignment="Top" FontFamily="Arial" FontSize="16"/>
+        <Label x:Name="PasswordLabel" Content="Password" HorizontalAlignment="Left" Margin="96,141,0,0" VerticalAlignment="Top" FontFamily="Arial" FontSize="16"/>
+        <TextBox x:Name="UserNameTextBox" HorizontalAlignment="Left" Height="23" Margin="253,107,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="283" FontFamily="Arial" FontSize="16" Text="preethamwilfredjohn@gmail.com"/>
+        <TextBox x:Name="PasswordTextBox" HorizontalAlignment="Left" Height="23" Margin="253,141,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="283" FontFamily="Arial" FontSize="16" Text="DellDefense"/>
+        <Button x:Name="SignInButton" Content="Sign In" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="421,285,0,0" Click="SignInButton_Click" FontFamily="Arial" FontSize="16"/>
+        <Button x:Name="CancelButton" Content="Cancel" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="520,285,0,0" Click="CancelButton_Click" FontFamily="Arial" FontSize="16"/>
 
     </Grid>
 </Window>

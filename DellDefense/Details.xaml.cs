@@ -10,6 +10,8 @@ namespace DellDefense
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+
+
     public partial class MainWindow : Window
     {
         private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -31,7 +33,6 @@ namespace DellDefense
                 FilePathTextBox.Text = dialog.FileName;
             }            
         }
-
         private void CheckConnectionButton_Click(object sender, RoutedEventArgs e)
         {
             log.Info("Check Connection button clicked");
@@ -60,130 +61,9 @@ namespace DellDefense
             }
         }
 
-        private void StartButton_Click(object sender, RoutedEventArgs e)
+        private void LoadDBButton_Click(object sender, RoutedEventArgs e)
         {
-            log.Info("Start Button Clicked");
-            if (!string.IsNullOrWhiteSpace(FilePathTextBox.Text) && !string.IsNullOrWhiteSpace(DataSourceTextBox.Text) && !string.IsNullOrWhiteSpace(DBNameTextBox.Text) && !string.IsNullOrWhiteSpace(DBPasswordBox.Password) && !string.IsNullOrWhiteSpace(UserIDTextBox.Text))
-            {
-                string checkD = null;
-                string connectionString = "Data Source=" + DataSourceTextBox.Text + ";Initial Catalog=" + DBNameTextBox.Text + ";User ID=" + UserIDTextBox.Text + ";Password=" + DBPasswordBox.Password;
-                compareConnection = new SqlConnection(connectionString);
-                try
-                {
-                    log.Info("Trying to connect to DataBase");
-                    compareConnection.Open();
-                    SqlCommand checkData = new SqlCommand("Select top 1 fileName from DellDefenseDB", compareConnection);
-                    SqlDataReader readFirst = checkData.ExecuteReader();
-                    while (readFirst.Read())
-                    {
-                        checkD = (string)readFirst["fileName"];
-                    }
-                    readFirst.Close();
-                    checkData.Dispose();
-                    if (string.IsNullOrEmpty(checkD))
-                    {
-                        MessageBox.Show("No rows in DataBase. Please load data into Database");
-                    }
-                    else
-                    {
-                        foreach (string file in Directory.EnumerateFiles(dialog.FileName))
-                        {
-                            string content = File.ReadAllText(file);
-                            string fileContentDB = null;
-                            try
-                            {
-                                using (SqlCommand sc = new SqlCommand("select fileContent from DellDefenseDB where fileName = @fileName", compareConnection))
-                                {
-                                    sc.Parameters.AddWithValue("@fileName", file);
-                                    using (SqlDataReader readDB = sc.ExecuteReader())
-                                    {
-                                        log.Info("Reading data from DataBase");
-                                        while (readDB.Read())
-                                        {
-                                            fileContentDB = (string)readDB["fileContent"];
-                                        }
-                                    }
-                                }
-                                log.Info("Comparing data from database with local file - " + file);
-                                if (content != fileContentDB)
-                                {
-                                    log.Fatal("Validataion not successfull.Please check the file at " + file);
-                                    MessageBox.Show("Validataion not successfull.Please check the file at " + file);
-                                    break;
-                                }
-                                else
-                                {
-                                    log.Info("Validation Successful for the file - " + file);
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                log.Error("Error reading file from database " + ex);
-                                MessageBox.Show("error reading file from database" + ex);
-                            }
-                        }
-                        string dir = FilePathTextBox.Text;
-                        foreach (string d in Directory.GetDirectories(dir))
-                        {
-                            foreach (string f in Directory.GetFiles(d))
-                            {
-                                string fileContentDB1 = null;
-                                string content1 = File.ReadAllText(f);
-                                try
-                                {
-                                    using (SqlCommand sc1 = new SqlCommand("select fileContent from DellDefenseDB where fileName = @fileName", compareConnection))
-                                    {
-                                        sc1.Parameters.AddWithValue("@fileName", f);
-                                        using (SqlDataReader readDB1 = sc1.ExecuteReader())
-                                        {
-                                            log.Info("Reading data from DataBase");
-                                            while (readDB1.Read())
-                                            {
-                                                fileContentDB1 = (string)readDB1["fileContent"];
-                                            }
-                                        }
-                                    }
-                                    log.Info("Comparing data from database with local file - " + f);
-                                    if (content1 != fileContentDB1)
-                                    {
-                                        log.Fatal("Validataion not successfull.Please check the file at " + f);
-                                        MessageBox.Show("Validataion not successfull.Please check the file at " + f);
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        log.Info("Validation Successful for the file - " + f);
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    log.Error("Error reading from Database with exception " + ex);
-                                }
-                            }
-                        }
-                    }                                        
-                    
-                    log.Info("Validated all the files. No files were modified in this cycle.");
-                    MessageBox.Show("Completed validation");
-                }
-                catch(Exception ex)
-                {
-                    log.Error("Connection to Database failed with exception " + ex);                   
-                }
-                finally
-                {
-                    log.Info("Closing DataBase connection");
-                    compareConnection.Close();
-                }
-            }
-            else
-            {
-                MessageBox.Show("Please enter all the details");
-            }
-        }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
             log.Info("Load To Database button clicked");
             if (!string.IsNullOrWhiteSpace(FilePathTextBox.Text) && !string.IsNullOrWhiteSpace(DataSourceTextBox.Text) && !string.IsNullOrWhiteSpace(DBNameTextBox.Text) && !string.IsNullOrWhiteSpace(DBPasswordBox.Password) && !string.IsNullOrWhiteSpace(UserIDTextBox.Text))
             {
@@ -194,7 +74,7 @@ namespace DellDefense
                     log.Info("Establishing connection to database");
                     con1.Open();
                     log.Info("Removing pre exsisting data from DataBase");
-                    SqlCommand del = new SqlCommand("delete from DellDefenseDB",con1);
+                    SqlCommand del = new SqlCommand("delete from DellDefenseDB", con1);
                     del.ExecuteNonQuery();
                     foreach (string file in Directory.EnumerateFiles(dialog.FileName))
                     {
@@ -202,9 +82,9 @@ namespace DellDefense
                         {
                             string content = File.ReadAllText(file);
                             SqlCommand sc = new SqlCommand("INSERT into DellDefenseDB values(@fileName,@fileContent)", con1);
-                            sc.Parameters.AddWithValue("@fileName", file);
-                            sc.Parameters.AddWithValue("@fileContent", content);
-                            log.Info("Inserting file details {0} into database" + file);
+                            sc.Parameters.AddWithValue("fileName", file);
+                            sc.Parameters.AddWithValue("fileContent", content);
+                            log.Info("Inserting file details into database " + file);
                             sc.ExecuteNonQuery();
                         }
                         catch (Exception ex)
@@ -233,6 +113,7 @@ namespace DellDefense
                         }
                     }
                     log.Info("Data loaded to database");
+                    MessageBox.Show("Data loaded into Database");
                 }
                 catch (Exception ex)
                 {
@@ -249,5 +130,70 @@ namespace DellDefense
                 MessageBox.Show("Please enter all the details");
             }
         }
+
+        private void StartButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (StartDateTimePicker.Value != null && EndDateTimePicker.Value !=null)
+            {
+                string email = (string)App.Current.Properties["email"];
+                DateTime startTime = (DateTime)StartDateTimePicker.Value;
+                DateTime endTime = (DateTime)EndDateTimePicker.Value;
+                string dataSource = DataSourceTextBox.Text;
+                string dataBase = DBNameTextBox.Text;
+                string userName = UserIDTextBox.Text;
+                string password = DBPasswordBox.Password;
+                string dirPath = dialog.FileName;
+                int jobInterval = Convert.ToInt32(JobIntervalTextBox.Text);
+                Schedule startApplication = new Schedule();
+                log.Info("Start Button Clicked");
+                if (!string.IsNullOrWhiteSpace(JobIntervalTextBox.Text) && !string.IsNullOrWhiteSpace(dirPath) && !string.IsNullOrWhiteSpace(dataSource) && !string.IsNullOrWhiteSpace(dataBase) && !string.IsNullOrWhiteSpace(password) && !string.IsNullOrWhiteSpace(userName))
+                {
+                    string checkD = null;
+                    string connectionString = "Data Source=" + dataSource + ";Initial Catalog=" + dataBase + ";User ID=" + userName + ";Password=" + password;
+                    compareConnection = new SqlConnection(connectionString);
+                    try
+                    {
+                        log.Info("Trying to connect to DataBase");
+                        compareConnection.Open();                        
+                        SqlCommand checkData = new SqlCommand("Select top 1 fileName from DellDefenseDB", compareConnection);
+                        SqlDataReader readFirst = checkData.ExecuteReader();
+                        while (readFirst.Read())
+                        {
+                            checkD = (string)readFirst["fileName"];
+                        }
+                        readFirst.Close();
+                        checkData.Dispose();
+                        if (string.IsNullOrEmpty(checkD))
+                        {
+                            MessageBox.Show("No rows in DataBase. Please load data into Database");
+                        }
+                        else
+                        {
+                            this.Hide();
+                            MessageBox.Show("Application is running and will be completed by the end time specified");
+                            startApplication.Start(startTime, endTime, dataSource, dataBase, userName, password, dirPath, email, jobInterval);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        log.Error("Connection to Database failed with exception " + ex);
+                    }
+                    finally
+                    {
+                        log.Info("Closing DataBase connection");
+                        compareConnection.Close();
+                    }                                        
+                }
+                else
+                {
+                    MessageBox.Show("Please enter all the details");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please enter all the details");
+            }
+            
+        }       
     }
 }
