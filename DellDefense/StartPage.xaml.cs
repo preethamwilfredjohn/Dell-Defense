@@ -13,15 +13,20 @@ namespace DellDefense
         public StartPage()
         {
             InitializeComponent();
+            
+            //For testing uncomment the below lines
+            //UserNameTextBox.Text = userName;
+            //PWBox.Password = Password;
         }
        
         private void SignInButton_Click(object sender, RoutedEventArgs e)
         {
+            
             log.Info("Validating User Name and Password");
             //compare user name and password
             if (UserNameTextBox.Text == userName)
             {
-                if (PasswordTextBox.Text == Password)
+                if (PWBox.Password == Password)
                 {
                     Application.Current.Properties["email"] = userName;
                     log.Info("User Name and password matches. Navigating to next page");

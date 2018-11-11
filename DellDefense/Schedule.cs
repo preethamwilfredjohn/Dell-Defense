@@ -18,6 +18,7 @@ namespace DellDefense
         {
             String from = "Dell Defense Tool";
             String subjectFailure = "Dell Defense Status - Failed";
+            //declaring variables and methods related to email
             MailMessage mailobj = new MailMessage();
             mailobj.From = new MailAddress("delldefense@gmail.com", from);
             mailobj.To.Add(new MailAddress(email));
@@ -66,6 +67,8 @@ namespace DellDefense
             catch (SchedulerException ex)
             {
                 log.Error("Job failed");
+
+                //sending email
                 mailobj.Body = "Dell Defense tool unable to create job with an exception - "+ex;
                 mailobj.Subject = subjectFailure;
                 try

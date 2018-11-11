@@ -16,16 +16,18 @@ namespace DellDefense
     class Job : IJob
     {
         SqlConnection compareConnection  = new SqlConnection();
+        Hashing hash = new Hashing();
         private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public async Task Execute(IJobExecutionContext context)
         {
-            //await Task.CompletedTask();
+            //initiaizing logger
             log4net.Config.XmlConfigurator.Configure();
 
+            //intializing job
             JobKey key = context.JobDetail.Key;
 
+            //retriving data from scheduler
             JobDataMap dataMap = context.JobDetail.JobDataMap;
-
             string dataSource = dataMap.GetString("dataSource");
             string dataBase = dataMap.GetString("dataBase");
             string userName = dataMap.GetString("userName");
@@ -33,41 +35,32 @@ namespace DellDefense
             string dirPath = dataMap.GetString("dirPath");
             string email = dataMap.GetString("email");
 
-            String from = "Dell Defense Tool";            
-            String subjectFailure = "Dell Defense Status - Failed";            
-            
+            //initializing variables and methods for email
+            string from = "Dell Defense Tool";            
+            string subjectFailure = "Dell Defense Status - Failed";                        
             MailMessage mailobj = new MailMessage();            
             mailobj.From = new MailAddress("delldefense@gmail.com", from);
-            mailobj.To.Add(new MailAddress(email));
-            
+            mailobj.To.Add(new MailAddress(email));            
             mailobj.IsBodyHtml = true;
             SmtpClient SMTPClient = new SmtpClient();
             SMTPClient.Host = "smtp.gmail.com";
             SMTPClient.Port = 587;
             SMTPClient.Credentials = new NetworkCredential("delldefense@gmail.com", "capfa18g3");
-            SMTPClient.EnableSsl = true;
-            log.Info("Start Button Clicked");
-            mailobj.Body = "A new cycle has been started by Dell Defense";
-            mailobj.Subject = "Dell Defense - New Cycle";
-            try
-            {
-                SMTPClient.Send(mailobj);
-            }
-            catch (Exception ex)
-            {
-                log.Error("Error in sending email with exception" + ex);
-            }
-
+            SMTPClient.EnableSsl = true;            
+            log.Info("A new cycle has been started by Dell Defense");
             string connectionString = "Data Source=" + dataSource + ";Initial Catalog=" + dataBase + ";User ID=" + userName + ";Password=" + password;
             compareConnection = new SqlConnection(connectionString);
+            //connecting with database
             try
             {
                 compareConnection.Open();
                 try
                 {
+                    //comparing data with local file
+                    //iterating through root directory
                     foreach (string file in Directory.GetFiles(dirPath))
                     {
-                        string content = File.ReadAllText(file);
+                        string hashedContent = Hashing.BytesToString(hash.GetHashSha256(file));
                         string fileContentDB = null;
                         try
                         {
@@ -84,16 +77,17 @@ namespace DellDefense
                                 }
                             }
                             log.Info("Comparing data from database with local file - " + file);
-                            if (content != fileContentDB)
+                            if (hashedContent != fileContentDB)
                             {
                                 log.Fatal("Validataion not successfull. Please check the file at " + file);
+                                //sending email
                                 mailobj.Body = "Validataion not successfull. Please check the file at " + file;
                                 mailobj.Subject = subjectFailure;
                                 try
                                 {
                                    SMTPClient.Send(mailobj);
                                 }
-                                catch (Exception ex)
+                                catch (SmtpException ex)
                                 {
                                     log.Error("Error in sending email with exception" + ex);
                                 }                                
@@ -103,7 +97,7 @@ namespace DellDefense
                                 log.Info("Validation Successful for the file - " + file);
                             }
                         }
-                        catch (Exception ex)
+                        catch (SqlException ex)
                         {
                             log.Error("Error reading file from database with exception - " + ex);
                             mailobj.Body = "Error reading file from database with exception - " + ex;
@@ -112,19 +106,20 @@ namespace DellDefense
                             {
                                 SMTPClient.Send(mailobj);
                             }
-                            catch (Exception e)
+                            catch (SmtpException e)
                             {
                                 log.Error("Error in sending email with exception" + e);
                             }
                         }
                     }
                     string dir = dirPath;
+                    //comparing files in sub directories
                     foreach (string d in Directory.GetDirectories(dir))
                     {
                         foreach (string f in Directory.GetFiles(d))
                         {
                             string fileContentDB1 = null;
-                            string content1 = File.ReadAllText(f);
+                            string hashedContent = Hashing.BytesToString(hash.GetHashSha256(f));                            
                             try
                             {
                                 using (SqlCommand sc1 = new SqlCommand("select fileContent from DellDefenseDB where fileName = @fileName", compareConnection))
@@ -140,16 +135,17 @@ namespace DellDefense
                                     }
                                 }
                                 log.Info("Comparing data from database with local file - " + f);
-                                if (content1 != fileContentDB1)
+                                if (hashedContent != fileContentDB1)
                                 {
                                     log.Fatal("Validataion not successfull.Please check the file at " + f);
+                                    //sending email
                                     mailobj.Body = "Validataion not successfull. Please check the file at " + f;
                                     mailobj.Subject = subjectFailure;
                                     try
                                     {
                                         SMTPClient.Send(mailobj);
                                     }
-                                    catch (Exception ex)
+                                    catch (SmtpException ex)
                                     {
                                         log.Error("Error in sending email with exception" + ex);
                                     }
@@ -159,16 +155,17 @@ namespace DellDefense
                                     log.Info("Validation Successful for the file - " + f);
                                 }
                             }
-                            catch (Exception ex)
+                            catch (SqlException ex)
                             {
                                 log.Error("Error reading from Database with exception " + ex);
+                                //sending email
                                 mailobj.Body = "Error reading from Database with exception - " + ex;
                                 mailobj.Subject = subjectFailure;
                                 try
                                 {
                                     SMTPClient.Send(mailobj);
                                 }
-                                catch (Exception e)
+                                catch (SmtpException e)
                                 {
                                     log.Error("Error in sending email with exception" + e);
                                 }
@@ -176,51 +173,59 @@ namespace DellDefense
                         }
                     }
                 }
-                catch(Exception ex)
+                catch(SqlException ex)
                 {
                     log.Error("Error while reading from database with exception " + ex);
+                    //sending email
                     mailobj.Body = "Error reading from Database with exception - " + ex;
                     mailobj.Subject = subjectFailure;
                     try
                     {
                         SMTPClient.Send(mailobj);
                     }
-                    catch (Exception e)
+                    catch (SmtpException e)
+                    {
+                        log.Error("Error in sending email with exception" + e);
+                    }
+                }
+                catch(IOException ex)
+                {
+                    log.Error("Error while reading from file with Exception -" + ex);
+                    //sending email
+                    mailobj.Body = "Error while reading from file with Exception -" + ex;
+                    mailobj.Subject = subjectFailure;
+                    try
+                    {
+                        SMTPClient.Send(mailobj);
+                    }
+                    catch (SmtpException e)
                     {
                         log.Error("Error in sending email with exception" + e);
                     }
                 }
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 log.Error("Cannot connect to database with exception " + ex);
+                //sending email
                 mailobj.Body = "Cannot connect to database with exception " + ex;
                 mailobj.Subject = subjectFailure;
                 try
                 {
                     SMTPClient.Send(mailobj);
                 }
-                catch (Exception e)
+                catch (SmtpException e)
                 {
                     log.Error("Error in sending email with exception" + e);
                 }
             }
+            //closing db connection
             finally
             {
                 log.Info("Closing DataBase connection");
                 compareConnection.Close();
             }
-            log.Info("Validated all the files. Completed cycle.");
-            mailobj.Body = "Dell Defense completed validation cycle.";
-            mailobj.Subject = "Dell Defense - Status";
-            try
-            {
-                SMTPClient.Send(mailobj);
-            }
-            catch (Exception e)
-            {
-                log.Error("Error in sending email with exception" + e);
-            }            
+            log.Info("Validated all the files. Completed cycle.");                      
         }
     }
 }
