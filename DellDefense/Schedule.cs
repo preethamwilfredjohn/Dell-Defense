@@ -26,7 +26,7 @@ namespace DellDefense
             SmtpClient SMTPClient = new SmtpClient();
             SMTPClient.Host = "smtp.gmail.com";
             SMTPClient.Port = 587;
-            SMTPClient.Credentials = new NetworkCredential("delldefense@gmail.com", "capfa18g3");
+            SMTPClient.Credentials = new NetworkCredential("delldefense@gmail.com", "");
             SMTPClient.EnableSsl = true;
             try
             {
