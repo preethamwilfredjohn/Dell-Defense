@@ -43,7 +43,7 @@ namespace DellDefenseCore
             SmtpClient SMTPClient = new SmtpClient();
             SMTPClient.Host = "smtp.gmail.com";
             SMTPClient.Port = 587;
-            SMTPClient.Credentials = new NetworkCredential("delldefense@gmail.com", "capfa18g3");
+            SMTPClient.Credentials = new NetworkCredential("delldefense@gmail.com", "");
             SMTPClient.EnableSsl = true;
             log.Info("A new cycle has been started by Dell Defense");
             string connectionString = "Data Source=" + dataSource + ";Initial Catalog=" + dataBase + ";User ID=" + userName + ";Password=" + password;
