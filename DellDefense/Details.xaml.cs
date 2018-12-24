@@ -24,12 +24,7 @@ namespace DellDefense
             InitializeComponent();
             log4net.Config.XmlConfigurator.Configure();
             
-            //For testing uncomment the below lines
-            //DataSourceTextBox.Text = "dcm.uhcl.edu";
-            //DBNameTextBox.Text = "capfa18g3";
-            //UserIDTextBox.Text = "capfa18g3";
-            //DBPasswordBox.Password = "3163345";
-            //Application.Current.Properties["email"] = "preethamwilfredjohn@gmail.com";
+            
 
         }
 
