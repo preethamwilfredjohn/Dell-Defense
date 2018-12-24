@@ -25,7 +25,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationRevision>1</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -121,6 +121,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>capfa18g3DataSet.xsd</DependentUpon>
     </Compile>
+    <Compile Include="ComparingFiles.cs" />
+    <Compile Include="FindingFiles.cs" />
+    <Compile Include="Hashing.cs" />
     <Compile Include="Job.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>

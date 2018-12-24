@@ -4,7 +4,7 @@ using System.IO;
 using System.Data.SqlClient;
 using System;
 using log4net;
-
+using System.Security.Cryptography;
 namespace DellDefense
 {
     /// <summary>
@@ -17,22 +17,34 @@ namespace DellDefense
         private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         CommonOpenFileDialog dialog = new CommonOpenFileDialog();
         SqlConnection con,con1,compareConnection = null;
+        Hashing hash = new Hashing();
+
         public MainWindow()
         {
             InitializeComponent();
             log4net.Config.XmlConfigurator.Configure();
+            
+            //For testing uncomment the below lines
+            //DataSourceTextBox.Text = "dcm.uhcl.edu";
+            //DBNameTextBox.Text = "capfa18g3";
+            //UserIDTextBox.Text = "capfa18g3";
+            //DBPasswordBox.Password = "3163345";
+            //Application.Current.Properties["email"] = "preethamwilfredjohn@gmail.com";
+
         }
 
+        //choose directory 
         private void PathButton_Click(object sender, RoutedEventArgs e)
         {
             log.Info("Choose Path button clicked");
-            dialog.InitialDirectory = @"C:\Users\preet\Desktop\Test";
+            dialog.InitialDirectory = @"S\";
             dialog.IsFolderPicker = true;
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 FilePathTextBox.Text = dialog.FileName;
             }            
         }
+        //check connection with database
         private void CheckConnectionButton_Click(object sender, RoutedEventArgs e)
         {
             log.Info("Check Connection button clicked");
@@ -49,7 +61,7 @@ namespace DellDefense
                     log.Info("Closing DataBase connection");
                     con.Close();
                 }
-                catch (Exception ex)
+                catch (SqlException ex)
                 {
                     log.Error("Connection to Database failed with exception "+ex);
                     MessageBox.Show("Connection not established. Exception " + ex);
@@ -61,64 +73,31 @@ namespace DellDefense
             }
         }
 
+        //loading database with the hash values of the file
         private void LoadDBButton_Click(object sender, RoutedEventArgs e)
         {
-
             log.Info("Load To Database button clicked");
             if (!string.IsNullOrWhiteSpace(FilePathTextBox.Text) && !string.IsNullOrWhiteSpace(DataSourceTextBox.Text) && !string.IsNullOrWhiteSpace(DBNameTextBox.Text) && !string.IsNullOrWhiteSpace(DBPasswordBox.Password) && !string.IsNullOrWhiteSpace(UserIDTextBox.Text))
             {
                 string connectionString = "Data Source=" + DataSourceTextBox.Text + ";Initial Catalog=" + DBNameTextBox.Text + ";User ID=" + UserIDTextBox.Text + ";Password=" + DBPasswordBox.Password;
                 con1 = new SqlConnection(connectionString);
                 try
-                {
+                {                    
                     log.Info("Establishing connection to database");
                     con1.Open();
                     log.Info("Removing pre exsisting data from DataBase");
                     SqlCommand del = new SqlCommand("delete from DellDefenseDB", con1);
                     del.ExecuteNonQuery();
-                    foreach (string file in Directory.EnumerateFiles(dialog.FileName))
-                    {
-                        try
-                        {
-                            string content = File.ReadAllText(file);
-                            SqlCommand sc = new SqlCommand("INSERT into DellDefenseDB values(@fileName,@fileContent)", con1);
-                            sc.Parameters.AddWithValue("fileName", file);
-                            sc.Parameters.AddWithValue("fileContent", content);
-                            log.Info("Inserting file details into database " + file);
-                            sc.ExecuteNonQuery();
-                        }
-                        catch (Exception ex)
-                        {
-                            log.Error("Error while writing to database" + ex);
-                        }
-                    }
-                    string dir = FilePathTextBox.Text;
-                    foreach (string d in Directory.GetDirectories(dir))
-                    {
-                        foreach (string f in Directory.GetFiles(d))
-                        {
-                            try
-                            {
-                                string content1 = File.ReadAllText(f);
-                                SqlCommand sc1 = new SqlCommand("INSERT into DellDefenseDB values(@fileName,@fileContent)", con1);
-                                sc1.Parameters.AddWithValue("@fileName", f);
-                                sc1.Parameters.AddWithValue("@fileContent", content1);
-                                log.Info("Inserting file details {0} into database" + f);
-                                sc1.ExecuteNonQuery();
-                            }
-                            catch (Exception ex)
-                            {
-                                log.Error("Error while writing to database" + ex);
-                            }
-                        }
-                    }
+                    //hashing and loading the root directory files
+                    FindingFiles.loadDB(dialog.FileName, con1);                    
                     log.Info("Data loaded to database");
                     MessageBox.Show("Data loaded into Database");
                 }
-                catch (Exception ex)
+                catch (SqlException ex)
                 {
                     log.Error("Connection to Database failed with exception " + ex);
                 }
+                //closing database connection
                 finally
                 {
                     con1.Close();
@@ -130,12 +109,12 @@ namespace DellDefense
                 MessageBox.Show("Please enter all the details");
             }
         }
-
+        //starting the application
         private void StartButton_Click(object sender, RoutedEventArgs e)
         {
             if (StartDateTimePicker.Value != null && EndDateTimePicker.Value !=null)
             {
-                string email = (string)App.Current.Properties["email"];
+                string email = (string)App.Current.Properties["email"];//"preethamwilfredjohn@gmail.com";
                 DateTime startTime = (DateTime)StartDateTimePicker.Value;
                 DateTime endTime = (DateTime)EndDateTimePicker.Value;
                 string dataSource = DataSourceTextBox.Text;
@@ -144,6 +123,8 @@ namespace DellDefense
                 string password = DBPasswordBox.Password;
                 string dirPath = dialog.FileName;
                 int jobInterval = Convert.ToInt32(JobIntervalTextBox.Text);
+
+                //invoking the function for scheduling the jobs 
                 Schedule startApplication = new Schedule();
                 log.Info("Start Button Clicked");
                 if (!string.IsNullOrWhiteSpace(JobIntervalTextBox.Text) && !string.IsNullOrWhiteSpace(dirPath) && !string.IsNullOrWhiteSpace(dataSource) && !string.IsNullOrWhiteSpace(dataBase) && !string.IsNullOrWhiteSpace(password) && !string.IsNullOrWhiteSpace(userName))
@@ -154,7 +135,8 @@ namespace DellDefense
                     try
                     {
                         log.Info("Trying to connect to DataBase");
-                        compareConnection.Open();                        
+                        compareConnection.Open();     
+                        //checking if the database has content
                         SqlCommand checkData = new SqlCommand("Select top 1 fileName from DellDefenseDB", compareConnection);
                         SqlDataReader readFirst = checkData.ExecuteReader();
                         while (readFirst.Read())
@@ -169,15 +151,16 @@ namespace DellDefense
                         }
                         else
                         {
-                            this.Hide();
+                            Hide();
                             MessageBox.Show("Application is running and will be completed by the end time specified");
                             startApplication.Start(startTime, endTime, dataSource, dataBase, userName, password, dirPath, email, jobInterval);
                         }
                     }
-                    catch (Exception ex)
+                    catch (SqlException ex)
                     {
                         log.Error("Connection to Database failed with exception " + ex);
                     }
+                    //closing database connection
                     finally
                     {
                         log.Info("Closing DataBase connection");
